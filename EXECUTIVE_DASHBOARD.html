@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Collections Recovery — Executive Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1a1d29; --sub:#6b7280; --bg:#f5f6f8; --card:#ffffff;
+    --red:#d33; --green:#1a8754; --line:#e5e7eb; --accent:#2454ff;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:24px;}
+  .wrap{max-width:1280px;margin:0 auto;}
+  header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+  h1{font-size:22px;margin:0 0 4px 0;}
+  .sub{color:var(--sub);font-size:13px;}
+  .verdict{background:#fff0f0;border:1px solid #f3c6c6;border-radius:10px;padding:14px 18px;margin-bottom:18px;font-size:15px;line-height:1.5;}
+  .verdict b{color:var(--red);}
+  .verdict .good{color:var(--green);font-weight:600;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+  .kpi{background:var(--card);border-radius:10px;padding:16px 18px;border:1px solid var(--line);}
+  .kpi .label{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;}
+  .kpi .value{font-size:26px;font-weight:700;margin:4px 0 2px 0;}
+  .kpi .delta{font-size:13px;font-weight:600;}
+  .kpi .delta.down{color:var(--red);}
+  .kpi .delta.flat{color:var(--sub);}
+  .row{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-bottom:18px;}
+  .card{background:var(--card);border-radius:10px;padding:16px 18px;border:1px solid var(--line);}
+  .card h2{font-size:14px;margin:0 0 10px 0;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);}
+  th{color:var(--sub);font-weight:600;font-size:11px;text-transform:uppercase;}
+  .flatrow td{color:var(--sub);}
+  .invest{background:var(--card);border-radius:10px;padding:16px 18px;border:1px solid var(--line);}
+  .invest h2{font-size:14px;margin:0 0 8px 0;}
+  .invest .pick{font-size:18px;font-weight:700;color:var(--accent);}
+  footer{color:var(--sub);font-size:11px;margin-top:10px;}
+  canvas{max-height:260px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Collections Recovery — Executive View</h1>
+      <div class="sub">Jan–Jul 2026 (golden dataset, deduplicated) · Aug excluded as a partial month</div>
+    </div>
+    <div class="sub">Prepared from raw operational data · full methodology in SQL repo &amp; notebook</div>
+  </header>
+
+  <div class="verdict">
+    The reported <b>"11% MoM recovery improvement" is not real.</b> It traces to duplicate payment records inflating the reported total — inflation grows from 3.8% (Jan) to 28.6% (Aug). On the deduplicated (golden) numbers, recovery <b>declined 19.2%</b> from January to July while <span class="good">contact rate, PTP kept-rate, and field-visit paid-rate all stayed flat</span> — effort and quality did not change; only the reporting did.
+  </div>
+
+  <div class="grid">
+    <div class="kpi">
+      <div class="label">Recovery Amount (Golden)</div>
+      <div class="value">₹148.7M</div>
+      <div class="delta down">▼ 19.2% vs Jan (₹184.1M)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Accounts Recovered</div>
+      <div class="value">1,868</div>
+      <div class="delta down">▼ 20.1% vs Jan (2,338)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Contact Rate</div>
+      <div class="value">20.1%</div>
+      <div class="delta flat">■ Flat all year (19.7–20.6%)</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Reported-Number Inflation</div>
+      <div class="value">28.0%</div>
+      <div class="delta down">▲ from 3.8% in Jan — the real story</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <h2>Naive (reported) vs. Golden (deduplicated) Recovery Amount</h2>
+      <canvas id="chartAmt"></canvas>
+    </div>
+    <div class="card">
+      <h2>Operational metrics — all flat (rules out mix &amp; effort explanations)</h2>
+      <table>
+        <tr><th>Metric</th><th>Jan-26</th><th>Jul-26</th><th>Verdict</th></tr>
+        <tr class="flatrow"><td>Contact rate</td><td>20.3%</td><td>20.1%</td><td>Flat</td></tr>
+        <tr class="flatrow"><td>PTP kept rate</td><td>24.1%</td><td>24.6%</td><td>Flat</td></tr>
+        <tr class="flatrow"><td>Field-visit paid rate</td><td>15.3%</td><td>16.4%</td><td>Flat</td></tr>
+        <tr class="flatrow"><td>Attempts / account</td><td>1.30</td><td>1.30</td><td>Flat</td></tr>
+        <tr class="flatrow"><td>Portfolio risk-segment mix</td><td colspan="2">~25% each seg., stable</td><td>Flat</td></tr>
+      </table>
+      <div class="sub" style="margin-top:8px;">If operations didn't change, the reported "improvement" can't be operational — see verdict above.</div>
+    </div>
+  </div>
+
+  <div class="invest">
+    <h2>₹10 Cr Investment Recommendation</h2>
+    <div class="pick">→ Better Borrower Targeting</div>
+    <div class="sub" style="margin:8px 0;">
+      Attempt volume/account is already flat and not the constraint — the constraint is conversion per contact on a book whose real recovery is falling despite unchanged effort. Re-prioritizing existing contact budget toward higher-probability-of-payment accounts (DPD, risk_segment, payment history) is the lowest-risk lever available.
+      <b>Confidence: low-to-moderate</b> — no cost table exists in this dataset, so ROI/break-even cannot be point-estimated; recommend a funded 60–90 day targeting pilot before committing the full ₹10 Cr. Full assumptions and downside scenario in the Executive Memo.
+    </div>
+  </div>
+
+  <footer>Source: 17 raw operational tables, Jan–Aug 2026 · Golden dataset built via documented dedup rules (see Data Quality Report) · This dashboard reflects deduplicated figures only.</footer>
+</div>
+
+<script>
+const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul'];
+const naive  = [191.1,174.1,193.2,178.4,187.0,178.7,190.3];
+const golden = [184.1,161.7,174.8,156.6,157.6,148.4,148.7];
+new Chart(document.getElementById('chartAmt'), {
+  type:'line',
+  data:{ labels, datasets:[
+    {label:'Naive (reported)', data:naive, borderColor:'#d33', backgroundColor:'#d33', tension:.25, borderDash:[5,3]},
+    {label:'Golden (deduplicated)', data:golden, borderColor:'#2454ff', backgroundColor:'#2454ff', tension:.25, borderWidth:3}
+  ]},
+  options:{
+    responsive:true,
+    plugins:{ legend:{position:'bottom'}, tooltip:{callbacks:{label:(c)=>c.dataset.label+': ₹'+c.parsed.y+'M'}} },
+    scales:{ y:{ title:{display:true,text:'₹ Millions'}, suggestedMin:120 } }
+  }
+});
+</script>
+</body>
+</html>
